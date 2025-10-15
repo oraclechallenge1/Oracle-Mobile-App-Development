@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     borderColor: "#E5E7EB",
     borderRadius: 12,
     backgroundColor: "#fff",
+    paddingHorizontal: 12,
   },
   hint: { marginTop: 6, color: "#9CA3AF", fontSize: 12 },
 
@@ -79,7 +80,10 @@ const styles = StyleSheet.create({
   caret: { 
     color: "#6B7280", 
     marginLeft: 8 },
-
+selectValue: {
+  color: "#0F172A",
+  fontWeight: "500",
+},
   smallNote: { 
     marginTop: 6, 
     color: "#94A3B8", 
@@ -87,13 +91,13 @@ const styles = StyleSheet.create({
 
   button: {
     height: 52,
-    backgroundColor: "#0F172A",
+    backgroundColor: PRIMARY,
     borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 8,
   },
-  buttonDisabled: { opacity: 0.6 }, // visual desabilitado (sem ação)
+  buttonDisabled: { opacity: 0.6 }, 
   buttonText: { 
     color: "#FFFFFF", 
     fontWeight: "800", 
@@ -103,6 +107,65 @@ const styles = StyleSheet.create({
     marginTop: 10, 
     color: "#64748B", 
     fontSize: 12 },
+
+    modalBackdrop: {
+  flex: 1,
+  backgroundColor: 'rgba(0,0,0,0.4)',
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingHorizontal: 20,
+},  
+modalCard: {
+  width: '100%',
+  maxWidth: 350,
+  backgroundColor: '#fff',
+  borderRadius: 12,
+  padding: 20,
+  shadowColor: '#000',
+  shadowOpacity: 0.25,
+  shadowOffset: { 
+    width: 0, 
+    height: 2 
+  },
+  shadowRadius: 8,
+  elevation: 5,
+},
+
+modalTitle: {
+  fontSize: 18,
+  fontWeight: '600',
+  marginBottom: 12,
+  textAlign: 'center',
+},
+
+modalItem: {
+  paddingVertical: 12,
+  paddingHorizontal: 10,
+  borderBottomWidth: 1,
+  borderBottomColor: '#eee',
+},
+
+modalItemText: {
+  fontSize: 16,
+  color: '#333',
+},
+
+modalClose: {
+  marginTop: 15,
+  alignSelf: 'center',
+},
+
+modalCloseText: {
+  color: '#E53935',
+  fontSize: 15,
+  fontWeight: '600',
+},
+  helper: { 
+    marginTop: 10, 
+    color: "#64748B", 
+    fontSize: 12 },
+
+
 });
 
 export default styles;

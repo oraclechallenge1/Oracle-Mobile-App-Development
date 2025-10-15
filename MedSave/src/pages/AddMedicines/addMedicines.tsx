@@ -20,11 +20,11 @@ const CATEGORIES: Option[] = [
   { id: 3, label: "Anti-inflamatório" },
 ];
 
-const UNITS: Option[] = [
+const unidade: Option[] = [
   { id: "mg", label: "mg" },
   { id: "ml", label: "ml" },
   { id: "g", label: "g" },
-  { id: "UNIDADE", label: "unidade" },
+  { id: "unidade", label: "unidade" },
 ];
 
 const FORMS: Option[] = [
@@ -46,14 +46,14 @@ export default function Add_Medicines() {
 
   const [status, setStatus] = useState<"Ativo" | "Inativo" | null>(null);
 
-  const [category, setCategory] = useState<Option | null>(null);
+  const [categoria, setCategoria] = useState<Option | null>(null);
   const [unit, setUnit] = useState<Option | null>(null);
   const [form, setForm] = useState<Option | null>(null);
-  const [active, setActive] = useState<Option | null>(null);
+  const [ativo_med, setAtivoMed] = useState<Option | null>(null);
 
 
   const [openModal, setOpenModal] = useState<
-    null | "category" | "UNIDADE" | "form" | "active"
+    null | "categoria" | "unidade" | "form" | "ativo_med"
   >(null);
 
   const open = (key: typeof openModal) => setOpenModal(key);
@@ -157,9 +157,9 @@ export default function Add_Medicines() {
         
           <View style={styles.field}>
             <Text style={styles.label}>Categoria *</Text>
-            <TouchableOpacity style={styles.select} onPress={() => open("category")}>
-              <Text style={category ? styles.selectValue : styles.selectPlaceholder}>
-                {category ? category.label : "Selecione a categoria"}
+            <TouchableOpacity style={styles.select} onPress={() => open("categoria")}>
+              <Text style={categoria ? styles.selectValue : styles.selectPlaceholder}>
+                {categoria ? categoria.label : "Selecione a categoria"}
               </Text>
               <Text style={styles.caret}>▼</Text>
             </TouchableOpacity>
@@ -167,8 +167,8 @@ export default function Add_Medicines() {
 
         
           <View style={styles.field}>
-            <Text style={styles.label}>Unidade de medida *</Text>
-            <TouchableOpacity style={styles.select} onPress={() => open("UNIDADE")}>
+            <Text style={styles.label}>unidade de medida *</Text>
+            <TouchableOpacity style={styles.select} onPress={() => open("unidade")}>
               <Text style={unit ? styles.selectValue : styles.selectPlaceholder}>
                 {unit ? unit.label : "Selecione a unidade"}
               </Text>
@@ -190,9 +190,9 @@ export default function Add_Medicines() {
           {/* Princípio ativo */}
           <View style={styles.field}>
             <Text style={styles.label}>Princípio ativo *</Text>
-            <TouchableOpacity style={styles.select} onPress={() => open("active")}>
-              <Text style={active ? styles.selectValue : styles.selectPlaceholder}>
-                {active ? active.label : "Selecione o princípio ativo"}
+            <TouchableOpacity style={styles.select} onPress={() => open("ativo_med")}>
+              <Text style={ativo_med ? styles.selectValue : styles.selectPlaceholder}>
+                {ativo_med ? ativo_med.label : "Selecione o princípio ativo"}
               </Text>
               <Text style={styles.caret}>▼</Text>
             </TouchableOpacity>
@@ -200,7 +200,7 @@ export default function Add_Medicines() {
 
           {/* Botão (interativo, sem persistência) */}
           <TouchableOpacity
-            style={[styles.button, (!name || !status || !category || !unit || !form || !active) ? styles.buttonDisabled : null]}
+            style={[styles.button, (!name || !status || !categoria || !unit || !form || !ativo_med) ? styles.buttonDisabled : null]}
             onPress={confirmSave}
             activeOpacity={0.8}
           >
@@ -212,10 +212,10 @@ export default function Add_Medicines() {
       </ScrollView>
 
       {/* Modais */}
-      {renderModal("category", CATEGORIES, setCategory)}
-      {renderModal("UNIDADE", UNITS, setUnit)}
+      {renderModal("categoria", CATEGORIES, setCategoria)}
+      {renderModal("unidade", unidade, setUnit)}
       {renderModal("form", FORMS, setForm)}
-      {renderModal("active", ACTIVES, setActive)}
+      {renderModal("ativo_med", ACTIVES, setAtivoMed)}
     </View>
   );
 }

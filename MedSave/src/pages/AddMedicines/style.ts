@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     fontSize: 14,
     color: "#111827",
+    paddingHorizontal: 12,
   },
   placeholderHint: { 
     marginTop: 6,
