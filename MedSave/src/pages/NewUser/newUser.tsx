@@ -1,166 +1,208 @@
-import React, {useState} from "react";
-import { View, Text, ScrollView, Alert, Pressable, TouchableOpacity, Modal,TextInput} from "react-native";
-import styles from "./style";
+import React, { useState } from "react";
+import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
+import estilos from "./style";
 import Header from "../../components/ui/Header/header";
 
-type Option = { id: string | number; label: string };
+import CampoTexto from "../../components/Input/input";
+import SeletorLinha from "../../components/Select/select";
+import ModalLista, { Opcao } from "../../components/ModalLista/modalLista";
 
-const CARGO : Option[] = [
+const CARGOS: Opcao[] = [
   { id: 1, label: "Médico" },
   { id: 2, label: "Enfermeiro" },
   { id: 3, label: "Farmacêutico" },
 ];
 
-const PERFIL : Option[] = [
+const PERFIS: Opcao[] = [
   { id: 1, label: "Administrador" },
   { id: 2, label: "Usuário padrão" },
 ];
 
+type ChaveModal = "cargo" | "perfil" | null;
+
 export default function New_User() {
+  const [nome, setNome] = useState("");
+  const [erroNome, setErroNome] = useState("");
 
-  const [cargo, setCargo] = useState<Option | null>(null);
-  const [perfil, setPerfil] = useState<Option | null>(null);
+  const [login, setLogin] = useState("");
+  const [erroLogin, setErroLogin] = useState("");
 
-  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [erroEmail, setErroEmail] = useState("");
 
-  const validarEmail =(text) =>{
-    const emailRegex
-  }
+  const [senha, setSenha] = useState("");
+  const [erroSenha, setErroSenha] = useState("");
 
-  const [openModal, setOpenModal] = useState<
-    null | "cargo" | "perfil"
-  >(null);
+  const [cargo, setCargo] = useState<Opcao | null>(null);
+  const [perfil, setPerfil] = useState<Opcao | null>(null);
 
-  const open = (key: typeof openModal) => setOpenModal(key);
-  const close = () => setOpenModal(null);
+  const [modalAberto, setModalAberto] = useState<ChaveModal>(null);
+  const abrir = (m: ChaveModal) => setModalAberto(m);
+  const fechar = () => setModalAberto(null);
 
-  const confirmSave = () => {
-      
-    Alert.alert(
-      "Simulação",
-      "Interação concluída, mas nada foi salvo (tela está em modo demonstração)."
-    );
+  // validações inline
+  const validarNome = (t: string) => {
+    setNome(t);
+    if (t.trim().length >= 3) setErroNome("");
+    else setErroNome("Informe ao menos 3 caracteres.");
   };
 
-  const renderModal = (title: string, data: Option[], onPick: (o: Option) => void) => (
-    <Modal visible={openModal !== null && title.toLowerCase().includes(openModal!)} transparent animationType="fade">
-      <View style={styles.modalBackdrop}>
-        <View style={styles.modalCard}>
-          <Text style={styles.modalTitle}>{title}</Text>
-          <ScrollView style={{ maxHeight: 320 }}>
-            {data.map((opt) => (
-              <Pressable
-                key={opt.id}
-                onPress={() => {
-                  onPick(opt);
-                  close();
-                }}
-                style={({ pressed }) => [
-                  styles.modalItem,
-                  pressed && { opacity: 0.6 },
-                ]}
-              >
-                <Text style={styles.modalItemText}>{opt.label}</Text>
-              </Pressable>
-            ))}
-          </ScrollView>
-          <TouchableOpacity style={styles.modalClose} onPress={close}>
-            <Text style={styles.modalCloseText}>Fechar</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
-  
+  const validarLogin = (t: string) => {
+    setLogin(t);
+    if (t.trim().length >= 5) setErroLogin("");
+    else setErroLogin("Login muito curto.");
+  };
+
+  const validarEmail = (t: string) => {
+    setEmail(t);
+    if (t.includes("@")) setErroEmail("");
+    else setErroEmail("E-mail inválido.");
+  };
+
+  const validarSenha = (t: string) => {
+    setSenha(t);
+    if (t.length >= 8) setErroSenha("");
+    else setErroSenha("A senha deve ter pelo menos 8 caracteres.");
+  };
+
+  // função para limpar todos os campos
+  const limparCampos = () => {
+    setNome("");
+    setLogin("");
+    setEmail("");
+    setSenha("");
+    setCargo(null);
+    setPerfil(null);
+    setErroNome("");
+    setErroLogin("");
+    setErroEmail("");
+    setErroSenha("");
+  };
+
+  // botão salvar
+  const aoSalvar = () => {
+    const okNome = nome.trim().length >= 3;
+    const okLogin = login.trim().length >= 5;
+    const okEmail = email.includes("@");
+    const okSenha = senha.length >= 8;
+
+    if (!okNome) setErroNome("Informe ao menos 3 caracteres.");
+    if (!okLogin) setErroLogin("Login muito curto.");
+    if (!okEmail) setErroEmail("E-mail inválido.");
+    if (!okSenha) setErroSenha("A senha deve ter pelo menos 8 caracteres.");
+
+    if (okNome && okLogin && okEmail && okSenha && cargo && perfil) {
+      Alert.alert("Sucesso", "Usuário salvo com sucesso (modo demonstração).");
+      limparCampos(); // limpa tudo após sucesso
+    }
+  };
+
+  // modal genérico com if/else
+  let dadosModal:
+    | { titulo: string; lista: Opcao[]; set: (o: Opcao | null) => void }
+    | null = null;
+
+  if (modalAberto === "cargo") {
+    dadosModal = { titulo: "cargo", lista: CARGOS, set: setCargo };
+  } else if (modalAberto === "perfil") {
+    dadosModal = { titulo: "perfil", lista: PERFIS, set: setPerfil };
+  } else {
+    dadosModal = null;
+  }
+
+  const botaoDesabilitado = !nome || !login || !email || !senha || !cargo || !perfil;
 
   return (
-    <View style={styles.safe}>
-      <Header/>
-        <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-          <Text style={styles.title}>Cadastrar Usuário</Text>
+    <View style={estilos.seguro}>
+      <Header />
+      <ScrollView style={estilos.container} contentContainerStyle={estilos.conteudo}>
+        <Text style={estilos.titulo}>Cadastrar Usuário</Text>
 
-          <View style={styles.card}>
+        <View style={estilos.cartao}>
+          <CampoTexto
+            rotulo="Nome completo *"
+            valor={nome}
+            aoMudarTexto={validarNome}
+            placeholder="Ex.: Maria da Silva"
+            inputProps={{
+              keyboardType: "default",
+              autoCapitalize: "words",
+            }}
+          />
+          {erroNome ? <Text style={{ color: "#EF4444", marginTop: 4 }}>{erroNome}</Text> : null}
 
-              <Text style={styles.section}>Dados do usuário</Text>
+          <CampoTexto
+            rotulo="Login *"
+            valor={login}
+            aoMudarTexto={validarLogin}
+            placeholder="Ex.: maria.silva"
+            inputProps={{
+              keyboardType: "default",
+              autoCapitalize: "none",
+              autoCorrect: false,
+            }}
+          />
+          {erroLogin ? <Text style={{ color: "#EF4444", marginTop: 4 }}>{erroLogin}</Text> : null}
 
-              {/* Nome */}
-              <View style={styles.field}>
-                <Text style={styles.label}>Nome completo *</Text>
-                <TextInput style={styles.input} />
-                <Text style={styles.hint}>Ex.: Maria da Silva</Text>
-              </View>
+          <CampoTexto
+            rotulo="E-mail *"
+            valor={email}
+            aoMudarTexto={validarEmail}
+            placeholder="Ex.: usuaria@hospital.com"
+            inputProps={{
+              keyboardType: "email-address",
+              autoCapitalize: "none",
+              autoCorrect: false,
+            }}
+          />
+          {erroEmail ? <Text style={{ color: "#EF4444", marginTop: 4 }}>{erroEmail}</Text> : null}
 
-              {/* Login */}
-              <View style={styles.field}>
-                <Text style={styles.label}>Login *</Text>
-                <TextInput style={styles.input} />
-                <Text style={styles.hint}>Ex.: maria.silva</Text>
-              </View>
+          <CampoTexto
+            rotulo="Senha *"
+            valor={senha}
+            aoMudarTexto={validarSenha}
+            placeholder="Mínimo 8 caracteres"
+            inputProps={{
+              secureTextEntry: true,
+            }}
+          />
+          {erroSenha ? <Text style={{ color: "#EF4444", marginTop: 4 }}>{erroSenha}</Text> : null}
 
-              {/* Senha */}
-              <View style={styles.field}>
-                <Text style={styles.label}>Senha *</Text>
-                <TextInput style={styles.input} />
-                <Text style={styles.hint}>Mínimo 8 caracteres</Text>
-              </View>
+          <SeletorLinha
+            rotulo="Cargo *"
+            valor={cargo?.label}
+            placeholder="Selecione o cargo"
+            aoPressionar={() => abrir("cargo")}
+          />
 
-              <Text style={styles.section}>Contato</Text>
+          <SeletorLinha
+            rotulo="Perfil *"
+            valor={perfil?.label}
+            placeholder="Selecione o perfil"
+            aoPressionar={() => abrir("perfil")}
+          />
 
-              {/* E-mail */}
-              <View style={styles.field}>
-                <Text style={styles.label}>E-mail *</Text>
-                <TextInput style={styles.input} keyboardType="email-address"/>
-                <Text style={styles.hint}>Ex.: usuaria@hospital.com</Text>
-              </View>
+          <TouchableOpacity
+            style={[estilos.botao, botaoDesabilitado && estilos.botaoDesabilitado]}
+            onPress={aoSalvar}
+            activeOpacity={0.8}
+          >
+            <Text style={estilos.textoBotao}>Salvar</Text>
+          </TouchableOpacity>
 
-              {/* Telefone */}
-              <View style={styles.field}>
-                <Text style={styles.label}>Telefone *</Text>
-                <TextInput style={styles.input} keyboardType="numeric"/>
-                <Text style={styles.hint}>Somente números (DDD+celular)</Text>
-              </View>
-    
-              <Text style={styles.section}>Vínculos</Text>
+          <Text style={estilos.ajuda}>* Campos obrigatórios</Text>
+        </View>
+      </ScrollView>
 
-              <View style={styles.field}>
-                <Text style={styles.label}>Cargo *</Text>
-                <TouchableOpacity style={styles.select} onPress={() => open("cargo")}>
-                    <Text style={cargo ? styles.selectValue : styles.selectPlaceholder}>
-                      {cargo ? cargo.label : "Selecione o cargo"}
-                    </Text>
-                    <Text style={styles.caret}>▼</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Perfil (PROFILE_USER → PROF_USER_ID) */}
-              <View style={styles.field}>
-                <Text style={styles.label}>Perfil *</Text>
-                <TouchableOpacity style={styles.select} onPress={() => open("perfil")}>
-                    <Text style={perfil ? styles.selectValue : styles.selectPlaceholder}>
-                      {perfil ? perfil.label : "Selecione o perfil"}
-                    </Text>
-                    <Text style={styles.caret}>▼</Text>
-                </TouchableOpacity>
-              </View>
-
-
-               <TouchableOpacity
-              style={[styles.button, (!cargo) ? styles.buttonDisabled : null]}
-              onPress={confirmSave}
-              activeOpacity={0.8}
-              >
-                <Text style={styles.buttonText}>Salvar</Text>
-              </TouchableOpacity>
-
-            <Text style={styles.helper}>* Campos obrigatórios</Text>
-          </View>
-        </ScrollView>
-
-      {/* Modais */}
-      {renderModal("cargo", CARGO, setCargo)}
-      {renderModal("perfil", PERFIL, setPerfil)}
-
+      {dadosModal && (
+        <ModalLista
+          visivel={!!modalAberto}
+          titulo={dadosModal.titulo}
+          opcoes={dadosModal.lista}
+          aoEscolher={(o) => dadosModal!.set(o)}
+          aoFechar={fechar}
+        />
+      )}
     </View>
-
   );
 }

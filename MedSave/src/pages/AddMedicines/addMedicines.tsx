@@ -1,221 +1,193 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-  Modal,
-  Pressable,
-  Alert,
-} from "react-native";
-import styles from "./style";
+import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
+import estilos from "./style";
 import Header from "../../components/ui/Header/header";
 
-type Option = { id: string | number; label: string };
+import ModalLista, { Opcao } from "../../components/ModalLista/modalLista";
+import CampoTexto from "../../components/Input/input";
+import SeletorLinha from "../../components/Select/select";
+import PilulasToggle from "../../components/PilulasToggle/pilulasToggle";
 
-const CATEGORIES: Option[] = [
+const CATEGORIAS: Opcao[] = [
   { id: 1, label: "Analgésico" },
   { id: 2, label: "Antibiótico" },
   { id: 3, label: "Anti-inflamatório" },
 ];
 
-const unidade: Option[] = [
+const UNIDADES: Opcao[] = [
   { id: "mg", label: "mg" },
   { id: "ml", label: "ml" },
   { id: "g", label: "g" },
   { id: "unidade", label: "unidade" },
 ];
 
-const FORMS: Option[] = [
+const FORMAS: Opcao[] = [
   { id: "comp", label: "Comprimido" },
   { id: "caps", label: "Cápsula" },
   { id: "sol", label: "Solução" },
   { id: "susp", label: "Suspensão" },
 ];
 
-const ACTIVES: Option[] = [
+const ATIVOS: Opcao[] = [
   { id: 10, label: "Dipirona" },
   { id: 11, label: "Paracetamol" },
   { id: 12, label: "Ibuprofeno" },
 ];
 
-export default function Add_Medicines() {
+type ChaveModal = "categoria" | "unidade" | "forma" | "ativo_med" | null;
 
-  const [name, setName] = useState("");
+export default function Add_Medicines() {
+  const [nome, setNome] = useState("");
+  const [erroNome, setErroNome] = useState<string>("");
 
   const [status, setStatus] = useState<"Ativo" | "Inativo" | null>(null);
+  const [categoria, setCategoria] = useState<Opcao | null>(null);
+  const [unidade, setUnidade] = useState<Opcao | null>(null);
+  const [forma, setForma] = useState<Opcao | null>(null);
+  const [ativoMed, setAtivoMed] = useState<Opcao | null>(null);
 
-  const [categoria, setCategoria] = useState<Option | null>(null);
-  const [unit, setUnit] = useState<Option | null>(null);
-  const [form, setForm] = useState<Option | null>(null);
-  const [ativo_med, setAtivoMed] = useState<Option | null>(null);
+  const [modalAberto, setModalAberto] = useState<ChaveModal>(null);
 
-
-  const [openModal, setOpenModal] = useState<
-    null | "categoria" | "unidade" | "form" | "ativo_med"
-  >(null);
-
-  const open = (key: typeof openModal) => setOpenModal(key);
-  const close = () => setOpenModal(null);
-
-  const confirmSave = () => {
-    
-    Alert.alert(
-      "Simulação",
-      "Interação concluída, mas nada foi salvo (tela está em modo demonstração)."
-    );
+  const limparCampos = () => {
+    setNome("");
+    setStatus(null);
+    setCategoria(null);
+    setUnidade(null);
+    setForma(null);
+    setAtivoMed(null);
+    setErroNome("");
   };
 
-  const renderModal = (title: string, data: Option[], onPick: (o: Option) => void) => (
-    <Modal visible={openModal !== null && title.toLowerCase().includes(openModal!)} transparent animationType="fade">
-      <View style={styles.modalBackdrop}>
-        <View style={styles.modalCard}>
-          <Text style={styles.modalTitle}>{title}</Text>
-          <ScrollView style={{ maxHeight: 320 }}>
-            {data.map((opt) => (
-              <Pressable
-                key={opt.id}
-                onPress={() => {
-                  onPick(opt);
-                  close();
-                }}
-                style={({ pressed }) => [
-                  styles.modalItem,
-                  pressed && { opacity: 0.6 },
-                ]}
-              >
-                <Text style={styles.modalItemText}>{opt.label}</Text>
-              </Pressable>
-            ))}
-          </ScrollView>
-          <TouchableOpacity style={styles.modalClose} onPress={close}>
-            <Text style={styles.modalCloseText}>Fechar</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
+  const abrir = (m: ChaveModal) => setModalAberto(m);
+  const fechar = () => setModalAberto(null);
+
+  const onChangeNome = (t: string) => {
+    setNome(t);
+    if (t.trim().length >= 3) setErroNome("");
+    else setErroNome("Nome do medicamento muito curto.");
+  };
+
+  const aoSalvar = () => {
+    const okNome = nome.trim().length >= 3;
+
+    if (!okNome) {
+      setErroNome("Nome do medicamento muito curto.");
+      return;
+    }
+
+
+    Alert.alert("Simulação", "Interação concluída, mas nada foi salvo.");
+    limparCampos(); 
+  };
+
+
+  let dadosModal:
+    | { titulo: string; lista: Opcao[]; set: (o: Opcao | null) => void }
+    | null = null;
+
+  if (modalAberto === "categoria") {
+    dadosModal = { titulo: "categoria", lista: CATEGORIAS, set: setCategoria };
+  } 
+  
+  else if (modalAberto === "unidade") {
+    dadosModal = { titulo: "unidade", lista: UNIDADES, set: setUnidade };
+  } 
+  else if (modalAberto === "forma") {
+    dadosModal = { titulo: "forma", lista: FORMAS, set: setForma };
+  } 
+  
+  else if (modalAberto === "ativo_med") {
+    dadosModal = { titulo: "ativo_med", lista: ATIVOS, set: setAtivoMed };
+  } 
+  
+  
+  else {
+    dadosModal = null;
+  }
+
+  const botaoDesabilitado = !nome || !status || !categoria || !unidade || !forma || !ativoMed;
 
   return (
-    <View style={styles.safe}>
+    <View style={estilos.seguro}>
       <Header />
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Cadastrar Medicamento</Text>
+      <ScrollView style={estilos.container} contentContainerStyle={estilos.conteudo}>
+        <Text style={estilos.titulo}>Cadastrar Medicamento</Text>
 
-        <View style={styles.card}>
-   
-          <View style={styles.field}>
-            <Text style={styles.label}>Nome do medicamento *</Text>
-            <TextInput
-              style={styles.input}
+        <View style={estilos.cartao}>
+          <View style={{ marginBottom: 16 }}>
+            <CampoTexto
+              rotulo="Nome do medicamento *"
+              valor={nome}
+              aoMudarTexto={onChangeNome}
               placeholder="Ex.: Dipirona 500 mg"
-              value={name}
-              onChangeText={setName}
-             
+              dica="Ex.: Dipirona 500 mg"
             />
-            <Text style={styles.placeholderHint}>Ex.: Dipirona 500 mg</Text>
+            {erroNome ? (
+              <Text style={{ color: "#EF4444", marginTop: 4 }}>{erroNome}</Text>
+            ) : null}
           </View>
 
-          {/* Status */}
-          <View style={styles.field}>
-            <Text style={styles.label}>Status *</Text>
-            <View style={styles.row}>
-              <TouchableOpacity
-                style={[
-                  styles.chip,
-                  status === "Ativo" ? styles.chipFilled : styles.chipGhost,
-                ]}
-                onPress={() => setStatus("Ativo")}
-              >
-                <Text
-                  style={[
-                    status === "Ativo" ? styles.chipTextFilled : styles.chipTextGhost,
-                  ]}
-                >
-                  Ativo
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.chip,
-                  status === "Inativo" ? styles.chipFilled : styles.chipGhost,
-                ]}
-                onPress={() => setStatus("Inativo")}
-              >
-                <Text
-                  style={[
-                    status === "Inativo" ? styles.chipTextFilled : styles.chipTextGhost,
-                  ]}
-                >
-                  Inativo
-                </Text>
-              </TouchableOpacity>
-            </View>
+          <View style={{ marginBottom: 16 }}>
+            <Text style={{ fontSize: 14, color: "#374151", marginBottom: 8, fontWeight: "600" }}>
+              Status *
+            </Text>
+            <PilulasToggle
+              opcoes={["Ativo", "Inativo"]}
+              valor={status}
+              aoMudar={(v) => setStatus(v as "Ativo" | "Inativo")}
+              cor="#E53935"
+            />
           </View>
 
-        
-          <View style={styles.field}>
-            <Text style={styles.label}>Categoria *</Text>
-            <TouchableOpacity style={styles.select} onPress={() => open("categoria")}>
-              <Text style={categoria ? styles.selectValue : styles.selectPlaceholder}>
-                {categoria ? categoria.label : "Selecione a categoria"}
-              </Text>
-              <Text style={styles.caret}>▼</Text>
-            </TouchableOpacity>
-          </View>
+          <SeletorLinha
+            rotulo="Categoria *"
+            valor={categoria?.label}
+            placeholder="Selecione a categoria"
+            aoPressionar={() => abrir("categoria")}
+          />
 
-        
-          <View style={styles.field}>
-            <Text style={styles.label}>unidade de medida *</Text>
-            <TouchableOpacity style={styles.select} onPress={() => open("unidade")}>
-              <Text style={unit ? styles.selectValue : styles.selectPlaceholder}>
-                {unit ? unit.label : "Selecione a unidade"}
-              </Text>
-              <Text style={styles.caret}>▼</Text>
-            </TouchableOpacity>
-          </View>
+          <SeletorLinha
+            rotulo="Unidade de medida *"
+            valor={unidade?.label}
+            placeholder="Selecione a unidade"
+            aoPressionar={() => abrir("unidade")}
+          />
 
-          {/* Forma farmacêutica */}
-          <View style={styles.field}>
-            <Text style={styles.label}>Forma farmacêutica *</Text>
-            <TouchableOpacity style={styles.select} onPress={() => open("form")}>
-              <Text style={form ? styles.selectValue : styles.selectPlaceholder}>
-                {form ? form.label : "Selecione a forma"}
-              </Text>
-              <Text style={styles.caret}>▼</Text>
-            </TouchableOpacity>
-          </View>
+          <SeletorLinha
+            rotulo="Forma farmacêutica *"
+            valor={forma?.label}
+            placeholder="Selecione a forma"
+            aoPressionar={() => abrir("forma")}
+          />
 
-          {/* Princípio ativo */}
-          <View style={styles.field}>
-            <Text style={styles.label}>Princípio ativo *</Text>
-            <TouchableOpacity style={styles.select} onPress={() => open("ativo_med")}>
-              <Text style={ativo_med ? styles.selectValue : styles.selectPlaceholder}>
-                {ativo_med ? ativo_med.label : "Selecione o princípio ativo"}
-              </Text>
-              <Text style={styles.caret}>▼</Text>
-            </TouchableOpacity>
-          </View>
+          <SeletorLinha
+            rotulo="Princípio ativo *"
+            valor={ativoMed?.label}
+            placeholder="Selecione o princípio ativo"
+            aoPressionar={() => abrir("ativo_med")}
+          />
 
-          {/* Botão (interativo, sem persistência) */}
           <TouchableOpacity
-            style={[styles.button, (!name || !status || !categoria || !unit || !form || !ativo_med) ? styles.buttonDisabled : null]}
-            onPress={confirmSave}
+            style={[estilos.botao, botaoDesabilitado && estilos.botaoDesabilitado]}
+            onPress={aoSalvar}
             activeOpacity={0.8}
           >
-            <Text style={styles.buttonText}>Salvar</Text>
+            <Text style={estilos.textoBotao}>Salvar</Text>
           </TouchableOpacity>
 
-          <Text style={styles.helper}>* Campos obrigatórios</Text>
+          <Text style={estilos.ajuda}>* Campos obrigatórios</Text>
         </View>
       </ScrollView>
 
-      {/* Modais */}
-      {renderModal("categoria", CATEGORIES, setCategoria)}
-      {renderModal("unidade", unidade, setUnit)}
-      {renderModal("form", FORMS, setForm)}
-      {renderModal("ativo_med", ACTIVES, setAtivoMed)}
+      {dadosModal && (
+        <ModalLista
+          visivel={!!modalAberto}
+          titulo={dadosModal.titulo}
+          opcoes={dadosModal.lista}
+          aoEscolher={(o) => dadosModal!.set(o)}
+          aoFechar={fechar}
+        />
+      )}
     </View>
   );
 }

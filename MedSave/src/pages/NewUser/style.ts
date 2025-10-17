@@ -1,32 +1,33 @@
 import { StyleSheet } from "react-native";
 
-const PRIMARY = '#E53935'; 
+const PRIMARIA = "#E53935";
 
-const styles = StyleSheet.create({
-  safe: { 
-    flex: 1, 
-    backgroundColor: PRIMARY 
+const estilos = StyleSheet.create({
+  seguro: {
+    flex: 1,
+    backgroundColor: PRIMARIA,
   },
-  header: {
-    backgroundColor: PRIMARY,
+  cabecalho: {
+    backgroundColor: PRIMARIA,
     paddingHorizontal: 16,
     paddingTop: 50,
     paddingBottom: 14,
   },
-  container: { 
-    flex: 1, 
-    backgroundColor: "#F8FAFC" 
+  container: {
+    flex: 1,
+    backgroundColor: "#F8FAFC",
   },
-  content: { padding: 16 },
-  title: { 
-    fontSize: 26, 
-    fontWeight: "800", 
-    color: PRIMARY, 
-    marginBottom: 12, 
-    textAlign: "center" 
+  conteudo: { padding: 16 },
+
+  titulo: {
+    fontSize: 26,
+    fontWeight: "800",
+    color: PRIMARIA,
+    marginBottom: 12,
+    textAlign: "center",
   },
 
-  card: {
+  cartao: {
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 16,
@@ -37,25 +38,26 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
 
-  section: {
+  secao: {
     fontSize: 13,
     fontWeight: "800",
-    color: PRIMARY,
+    color: PRIMARIA,
     marginBottom: 8,
     marginTop: 6,
     textTransform: "uppercase",
     letterSpacing: 0.6,
   },
 
-  field: { marginBottom: 16 },
-  label: { 
-    fontSize: 14, 
-    color: "#374151", 
-    marginBottom: 8, 
-    fontWeight: "600" 
+  campo: { marginBottom: 16 },
+
+  rotulo: {
+    fontSize: 14,
+    color: "#374151",
+    marginBottom: 8,
+    fontWeight: "600",
   },
 
-  input: {
+  entrada: {
     height: 48,
     borderWidth: 1,
     borderColor: "#E5E7EB",
@@ -63,9 +65,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingHorizontal: 12,
   },
-  hint: { marginTop: 6, color: "#9CA3AF", fontSize: 12 },
 
-  select: {
+  dica: { marginTop: 6, color: "#9CA3AF", fontSize: 12 },
+
+  seletor: {
     minHeight: 48,
     borderWidth: 1,
     borderColor: "#E5E7EB",
@@ -76,96 +79,86 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  selectPlaceholder: { color: "#9CA3AF" },
-  caret: { 
-    color: "#6B7280", 
-    marginLeft: 8 },
-selectValue: {
-  color: "#0F172A",
-  fontWeight: "500",
-},
-  smallNote: { 
-    marginTop: 6, 
-    color: "#94A3B8", 
-    fontSize: 12 },
+  placeholderSeletor: { color: "#9CA3AF" },
+  seta: { color: "#6B7280", marginLeft: 8 },
+  valorSeletor: { color: "#0F172A", fontWeight: "500" },
 
-  button: {
+  notaPequena: { marginTop: 6, color: "#94A3B8", fontSize: 12 },
+
+  botao: {
     height: 52,
-    backgroundColor: PRIMARY,
+    backgroundColor: PRIMARIA,
     borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 8,
   },
-  buttonDisabled: { opacity: 0.6 }, 
-  buttonText: { 
-    color: "#FFFFFF", 
-    fontWeight: "800", 
-    fontSize: 16 },
+  botaoDesabilitado: { opacity: 0.6 },
+  textoBotao: { color: "#FFFFFF", fontWeight: "800", fontSize: 16 },
 
-  reqNote: { 
-    marginTop: 10, 
-    color: "#64748B", 
-    fontSize: 12 },
+  notaObrig: { marginTop: 10, color: "#64748B", fontSize: 12 },
 
-    modalBackdrop: {
-  flex: 1,
-  backgroundColor: 'rgba(0,0,0,0.4)',
-  justifyContent: 'center',
-  alignItems: 'center',
-  paddingHorizontal: 20,
-},  
-modalCard: {
-  width: '100%',
-  maxWidth: 350,
-  backgroundColor: '#fff',
-  borderRadius: 12,
-  padding: 20,
-  shadowColor: '#000',
-  shadowOpacity: 0.25,
-  shadowOffset: { 
-    width: 0, 
-    height: 2 
+  // Modal
+  fundoModal: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
   },
-  shadowRadius: 8,
-  elevation: 5,
-},
+  cartaoModal: {
+    width: "100%",
+    maxWidth: 350,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  tituloModal: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  itemModal: {
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  textoItemModal: {
+    fontSize: 16,
+    color: "#333",
+  },
+  fecharModal: {
+    marginTop: 15,
+    alignSelf: "center",
+  },
+  textoFecharModal: {
+    color: PRIMARIA,
+    fontSize: 15,
+    fontWeight: "600",
+  },
 
-modalTitle: {
-  fontSize: 18,
-  fontWeight: '600',
-  marginBottom: 12,
-  textAlign: 'center',
-},
+  ajuda: { marginTop: 10, color: "#64748B", fontSize: 12 },
 
-modalItem: {
-  paddingVertical: 12,
-  paddingHorizontal: 10,
-  borderBottomWidth: 1,
-  borderBottomColor: '#eee',
-},
-
-modalItemText: {
-  fontSize: 16,
-  color: '#333',
-},
-
-modalClose: {
-  marginTop: 15,
-  alignSelf: 'center',
-},
-
-modalCloseText: {
-  color: '#E53935',
-  fontSize: 15,
-  fontWeight: '600',
-},
-  helper: { 
-    marginTop: 10, 
-    color: "#64748B", 
-    fontSize: 12 },
-
-
+  // Senha com alternar
+  entradaComAlternar: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  botaoMostrar: {
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginLeft: 8,
+  },
+  textoBotaoMostrar: {
+    fontWeight: "600",
+  },
 });
 
-export default styles;
+export default estilos;
