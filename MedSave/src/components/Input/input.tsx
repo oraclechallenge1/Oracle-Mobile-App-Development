@@ -13,22 +13,30 @@ type Props = {
   keyBoardType?: TextInputProps["keyboardType"];
 };
 
-export default function CampoTexto({ rotulo, valor, aoMudarTexto, dica, erro, placeholder, inputProps }: Props) {
+export default function CampoTexto({
+  rotulo,
+  valor,
+  aoMudarTexto,
+  dica,
+  erro,
+  placeholder,
+  inputProps,
+}: Props) {
   return (
     <View style={styles.campo}>
       <Text style={styles.rotulo}>{rotulo}</Text>
       <TextInput
-        style={[styles.entrada, erro && { borderColor: "#EF4444" }]}
+        style={[styles.entrada, erro && { borderColor: "#EF4444" }]} // Aplica a cor de erro
         value={valor}
-        onChangeText={aoMudarTexto}
+        onChangeText={aoMudarTexto}  // Chama a função aoMudarTexto para atualizar o estado
         placeholder={placeholder}
-        keyboardType={inputProps?.keyboardType}
-        {...inputProps}
+        keyboardType={inputProps?.keyboardType || "default"}  // Define o tipo do teclado
+        autoCapitalize="none"  // Evita a capitalização automática
+        autoCorrect={false}  // Desativa a correção automática
+        {...inputProps}  // Permite a passagem de mais propriedades (como maxLength, multiline, etc.)
       />
-      {dica ? <Text style={styles.dica}>{dica}</Text> : null}
-      {erro ? <Text style={{ color: "red", marginTop: 4 }}>{erro}</Text> : null}
+      {dica && <Text style={styles.dica}>{dica}</Text>}
+      {erro && <Text style={{ color: "red", marginTop: 4 }}>{erro}</Text>}
     </View>
   );
 }
-
-

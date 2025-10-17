@@ -35,7 +35,7 @@ export default function Header() {
           />
           <Text style={styles.infoText}>
             Aplicativo em desenvolvimento, a ideia é ser um complemento ao site
-            do APEX, de momento desenvolvido CRUD básico.
+            do APEX, de momento desenvolvido aplicativo básico.
           </Text>
         </View>
       </View>

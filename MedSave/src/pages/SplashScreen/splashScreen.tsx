@@ -1,13 +1,14 @@
+// app/splash/index.js
 import React, { useEffect } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 
 export default function SplashScreen({ navigation }) {
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('Home'); // substitui a tela para não voltar ao Splash
-    }, 3000); // 3 segundos
+      navigation.replace('Login'); 
+    }, 3000); 
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timer); 
   }, [navigation]);
 
   return (
@@ -24,7 +25,7 @@ export default function SplashScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff', // cor de fundo (verde, por exemplo)
+    backgroundColor: '#ffffff', 
     alignItems: 'center',
     justifyContent: 'center',
   },

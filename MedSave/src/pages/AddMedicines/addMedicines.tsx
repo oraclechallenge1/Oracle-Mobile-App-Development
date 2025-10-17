@@ -63,8 +63,8 @@ export default function Add_Medicines() {
 
   const onChangeNome = (t: string) => {
     setNome(t);
-    if (t.trim().length >= 3) setErroNome("");
-    else setErroNome("Nome do medicamento muito curto.");
+    if (t.trim().length >= 3) setErroNome(""); // Se o nome tiver 3 ou mais caracteres, remove o erro
+    else setErroNome("Nome do medicamento muito curto."); // Exibe erro caso contrário
   };
 
   const aoSalvar = () => {
@@ -75,11 +75,9 @@ export default function Add_Medicines() {
       return;
     }
 
-
     Alert.alert("Simulação", "Interação concluída, mas nada foi salvo.");
     limparCampos(); 
   };
-
 
   let dadosModal:
     | { titulo: string; lista: Opcao[]; set: (o: Opcao | null) => void }
@@ -87,21 +85,13 @@ export default function Add_Medicines() {
 
   if (modalAberto === "categoria") {
     dadosModal = { titulo: "categoria", lista: CATEGORIAS, set: setCategoria };
-  } 
-  
-  else if (modalAberto === "unidade") {
+  } else if (modalAberto === "unidade") {
     dadosModal = { titulo: "unidade", lista: UNIDADES, set: setUnidade };
-  } 
-  else if (modalAberto === "forma") {
+  } else if (modalAberto === "forma") {
     dadosModal = { titulo: "forma", lista: FORMAS, set: setForma };
-  } 
-  
-  else if (modalAberto === "ativo_med") {
+  } else if (modalAberto === "ativo_med") {
     dadosModal = { titulo: "ativo_med", lista: ATIVOS, set: setAtivoMed };
-  } 
-  
-  
-  else {
+  } else {
     dadosModal = null;
   }
 
@@ -121,10 +111,8 @@ export default function Add_Medicines() {
               aoMudarTexto={onChangeNome}
               placeholder="Ex.: Dipirona 500 mg"
               dica="Ex.: Dipirona 500 mg"
+              erro={erroNome}
             />
-            {erroNome ? (
-              <Text style={{ color: "#EF4444", marginTop: 4 }}>{erroNome}</Text>
-            ) : null}
           </View>
 
           <View style={{ marginBottom: 16 }}>

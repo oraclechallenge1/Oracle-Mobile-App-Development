@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
-import estilos from "./style";
+import styles from "./style";
 import Header from "../../components/ui/Header/header";
 
 import CampoTexto from "../../components/Input/input";
@@ -92,7 +92,7 @@ export default function New_User() {
     if (!okSenha) setErroSenha("A senha deve ter pelo menos 8 caracteres.");
 
     if (okNome && okLogin && okEmail && okSenha && cargo && perfil) {
-      Alert.alert("Sucesso", "Usuário salvo com sucesso (modo demonstração).");
+      Alert.alert("Sucesso", "Interação realizada com sucesso, porém nada foi salvo.");
       limparCampos(); // limpa tudo após sucesso
     }
   };
@@ -113,12 +113,12 @@ export default function New_User() {
   const botaoDesabilitado = !nome || !login || !email || !senha || !cargo || !perfil;
 
   return (
-    <View style={estilos.seguro}>
+    <View style={styles.seguro}>
       <Header />
-      <ScrollView style={estilos.container} contentContainerStyle={estilos.conteudo}>
-        <Text style={estilos.titulo}>Cadastrar Usuário</Text>
+      <ScrollView style={styles.container} contentContainerStyle={styles.conteudo}>
+        <Text style={styles.titulo}>Cadastrar Usuário</Text>
 
-        <View style={estilos.cartao}>
+        <View style={styles.cartao}>
           <CampoTexto
             rotulo="Nome completo *"
             valor={nome}
@@ -183,14 +183,14 @@ export default function New_User() {
           />
 
           <TouchableOpacity
-            style={[estilos.botao, botaoDesabilitado && estilos.botaoDesabilitado]}
+            style={[styles.botao, botaoDesabilitado && styles.botaoDesabilitado]}
             onPress={aoSalvar}
             activeOpacity={0.8}
           >
-            <Text style={estilos.textoBotao}>Salvar</Text>
+            <Text style={styles.textoBotao}>Salvar</Text>
           </TouchableOpacity>
 
-          <Text style={estilos.ajuda}>* Campos obrigatórios</Text>
+          <Text style={styles.ajuda}>* Campos obrigatórios</Text>
         </View>
       </ScrollView>
 

@@ -5,6 +5,7 @@ const icons = {
   "icon-pilula.png": require("../../icon/icon-pilula.png"),
   "icon-coracao.png": require("../../icon/icon-coracao.png"),
   "icon-user.png": require("../../icon/icon-user.png"),
+  "icon-search.png": require("../../icon/icon-search.png"),
 
 };
 
