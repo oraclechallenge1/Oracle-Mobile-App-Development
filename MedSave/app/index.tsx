@@ -1,4 +1,4 @@
-// app/splash/index.js
+
 import React, { useEffect } from 'react';
 import { View, Image  } from 'react-native';
 import { useRouter } from 'expo-router';
