@@ -1,6 +1,7 @@
 // src/components/MedicationCard/medicationCard.tsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import styles from './style';
 
 const MedicationCard = ({ medication }) => {
   return (
