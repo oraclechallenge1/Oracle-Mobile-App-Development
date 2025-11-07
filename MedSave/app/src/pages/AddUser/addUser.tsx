@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "./style";
 import Header from "../../components/ui/Header/header";
 
@@ -18,10 +19,12 @@ const PERFIS: Opcao[] = [
   { id: 2, label: "Usuário padrão" },
 ];
 
+const DRAFT_KEY = "@medsave:draft_user";
+const USERS_CACHE_KEY = "@medsave:users_cache";
+
 type ChaveModal = "cargo" | "perfil" | null;
 
 export default function AddUser() {
-  
   const [nome, setNome] = useState("");
   const [erroNome, setErroNome] = useState("");
 
@@ -40,12 +43,50 @@ export default function AddUser() {
   const [modalAberto, setModalAberto] = useState<ChaveModal>(null);
   const abrir = (m: ChaveModal) => setModalAberto(m);
   const fechar = () => setModalAberto(null);
-  
+
+
+
+  useEffect(() => {
+    (async () => {
+      const raw = await AsyncStorage.getItem(DRAFT_KEY);
+
+      if (!raw) return;
+
+      try {
+
+        const draft = JSON.parse(raw);
+
+        setNome(draft.nome ?? "");
+        setLogin(draft.login ?? "");
+        setEmail(draft.email ?? "");
+        setSenha(draft.senha ?? "");
+        setCargo(draft.cargo ?? null);
+        setPerfil(draft.perfil ?? null);
+
+      } catch {}
+    })();
+  }, []);
+
+
+  useEffect(() => {
+
+    const t = setTimeout(() => {
+      const draft = { nome, login, email, senha, cargo, perfil, updatedAt: Date.now() };
+      AsyncStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+
+    }, 300);
+
+    return () => clearTimeout(t);
+
+  }, [nome, login, email, senha, cargo, perfil]);
+
+ 
   const validarNome = (t: string) => {
     setNome(t);
     if (t.trim().length >= 3) setErroNome("");
     else setErroNome("Informe ao menos 3 caracteres.");
   };
+
 
   const validarLogin = (t: string) => {
     setLogin(t);
@@ -55,9 +96,11 @@ export default function AddUser() {
 
   const validarEmail = (t: string) => {
     setEmail(t);
-    if (t.includes("@")) setErroEmail("");
+    const re = /\S+@\S+\.\S+/; 
+    if (re.test(t)) setErroEmail("");
     else setErroEmail("E-mail inválido.");
   };
+
 
   const validarSenha = (t: string) => {
     setSenha(t);
@@ -65,7 +108,10 @@ export default function AddUser() {
     else setErroSenha("A senha deve ter pelo menos 8 caracteres.");
   };
 
-  const limparCampos = () => {
+
+
+  const limparCampos = async () => {
+
     setNome("");
     setLogin("");
     setEmail("");
@@ -76,31 +122,64 @@ export default function AddUser() {
     setErroLogin("");
     setErroEmail("");
     setErroSenha("");
+
+    await AsyncStorage.removeItem(DRAFT_KEY);
+
   };
 
-  
-  const aoSalvar = () => {
+
+  const aoSalvar = async () => {
+
     const okNome = nome.trim().length >= 3;
     const okLogin = login.trim().length >= 5;
-    const okEmail = email.includes("@");
+    const re = /\S+@\S+\.\S+/;
+    const okEmail = re.test(email);
     const okSenha = senha.length >= 8;
 
     if (!okNome) setErroNome("Informe ao menos 3 caracteres.");
+
     if (!okLogin) setErroLogin("Login muito curto.");
+
     if (!okEmail) setErroEmail("E-mail inválido.");
+
     if (!okSenha) setErroSenha("A senha deve ter pelo menos 8 caracteres.");
 
-    if (okNome && okLogin && okEmail && okSenha && cargo && perfil) {
-      Alert.alert("Sucesso", "Interação realizada com sucesso, porém nada foi salvo.");
-      limparCampos();
+    if (!(okNome && okLogin && okEmail && okSenha && cargo && perfil)) return;
+
+    const raw = await AsyncStorage.getItem(USERS_CACHE_KEY);
+    const lista: any[] = raw ? JSON.parse(raw) : [];
+    const jaExiste = lista.some(u => String(u.login).toLowerCase() === login.trim().toLowerCase());
+    
+    if (jaExiste) {
+
+      setErroLogin("Este login já está em uso.");
+      Alert.alert("Atenção", "Já existe um usuário com esse login.");
+
+      return;
+
     }
+
+    const novo = {
+      id: Date.now().toString(),
+      nome: nome.trim(),
+      login: login.trim(),
+      email: email.trim(),
+      senha,
+      cargo,
+      perfil,
+      createdAt: new Date().toISOString(),
+    };
+
+
+    lista.push(novo);
+
+    await AsyncStorage.setItem(USERS_CACHE_KEY, JSON.stringify(lista));
+    await limparCampos();
+
+    Alert.alert("Sucesso", "Usuário salvo localmente (protótipo).");
   };
 
-
-
-  let dadosModal:
-    | { titulo: string; lista: Opcao[]; set: (o: Opcao | null) => void }
-    | null = null;
+  let dadosModal: | { titulo: string; lista: Opcao[]; set: (o: Opcao | null) => void } | null = null;
 
   if (modalAberto === "cargo") {
     dadosModal = { titulo: "cargo", lista: CARGOS, set: setCargo };
@@ -114,21 +193,21 @@ export default function AddUser() {
 
   return (
     <View style={styles.seguro}>
+
       <Header />
+
+
       <ScrollView style={styles.container} contentContainerStyle={styles.conteudo}>
         <Text style={styles.titulo}>Cadastrar Usuário</Text>
 
-
         <View style={styles.cartao}>
+
           <CampoTexto
             rotulo="Nome completo *"
             valor={nome}
             aoMudarTexto={validarNome}
             placeholder="Ex.: Maria da Silva"
-            inputProps={{
-              keyboardType: "default",
-              autoCapitalize: "words",
-            }}
+            inputProps={{ keyboardType: "default", autoCapitalize: "words" }}
           />
           {erroNome ? <Text style={{ color: "#EF4444", marginTop: 4 }}>{erroNome}</Text> : null}
 
@@ -137,11 +216,7 @@ export default function AddUser() {
             valor={login}
             aoMudarTexto={validarLogin}
             placeholder="Ex.: maria.silva"
-            inputProps={{
-              keyboardType: "default",
-              autoCapitalize: "none",
-              autoCorrect: false,
-            }}
+            inputProps={{ keyboardType: "default", autoCapitalize: "none", autoCorrect: false }}
           />
           {erroLogin ? <Text style={{ color: "#EF4444", marginTop: 4 }}>{erroLogin}</Text> : null}
 
@@ -150,11 +225,7 @@ export default function AddUser() {
             valor={email}
             aoMudarTexto={validarEmail}
             placeholder="Ex.: usuaria@hospital.com"
-            inputProps={{
-              keyboardType: "email-address",
-              autoCapitalize: "none",
-              autoCorrect: false,
-            }}
+            inputProps={{ keyboardType: "email-address", autoCapitalize: "none", autoCorrect: false }}
           />
           {erroEmail ? <Text style={{ color: "#EF4444", marginTop: 4 }}>{erroEmail}</Text> : null}
 
@@ -163,9 +234,7 @@ export default function AddUser() {
             valor={senha}
             aoMudarTexto={validarSenha}
             placeholder="Mínimo 8 caracteres"
-            inputProps={{
-              secureTextEntry: true,
-            }}
+            inputProps={{ secureTextEntry: true }}
           />
           {erroSenha ? <Text style={{ color: "#EF4444", marginTop: 4 }}>{erroSenha}</Text> : null}
 
@@ -187,12 +256,17 @@ export default function AddUser() {
             style={[styles.botao, botaoDesabilitado && styles.botaoDesabilitado]}
             onPress={aoSalvar}
             activeOpacity={0.8}
+            disabled={botaoDesabilitado}
           >
+
             <Text style={styles.textoBotao}>Salvar</Text>
           </TouchableOpacity>
 
           <Text style={styles.ajuda}>* Campos obrigatórios</Text>
+
         </View>
+
+
       </ScrollView>
 
       {dadosModal && (
@@ -200,10 +274,12 @@ export default function AddUser() {
           visivel={!!modalAberto}
           titulo={dadosModal.titulo}
           opcoes={dadosModal.lista}
-          aoEscolher={(o) => dadosModal!.set(o)}
+          aoEscolher={(o) => { dadosModal!.set(o); setModalAberto(null); }}
           aoFechar={fechar}
         />
       )}
+
     </View>
+    
   );
 }

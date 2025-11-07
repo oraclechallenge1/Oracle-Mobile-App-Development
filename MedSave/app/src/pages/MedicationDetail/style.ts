@@ -1,34 +1,26 @@
-// src/pages/MedicationDetail/style.js
 import { StyleSheet } from 'react-native';
-const PRIMARIA = "#E53935"; 
 
-const styles = StyleSheet.create({
+export default StyleSheet.create({
   seguro: {
     flex: 1,
-    backgroundColor: PRIMARIA,  
+    backgroundColor: '#F8FAFC',
   },
   container: {
-    flex: 1,
-    backgroundColor: "#F8FAFC", 
     padding: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: PRIMARIA,  
-    marginBottom: 20,
+    color: '#E53935',
+    marginBottom: 16,
   },
-  name: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',  
-    marginBottom: 10,
+  label: {
+    fontSize: 14,
+    color: '#6B7280',
   },
-  description: {
-    fontSize: 16,
-    color: '#666',  
-    lineHeight: 24,
+  value: {
+    fontSize: 14,
+    color: '#111827',
+    fontWeight: '600',
   },
 });
-
-export default styles;

@@ -1,115 +1,144 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, FlatList, TouchableOpacity, Text } from 'react-native';
+import { useRouter } from 'expo-router';
 import MedicationCard from '../../components/MedicationCard/medicationCard';
 import Header from '../../components/ui/Header/header';
 import styles from './style';
-import { useRouter } from 'expo-router';
 
-interface Medicine {
-  id: number;
-  nameMedication: string;
-  statusMed: string;
-  activeIngredientIds: number[];
-  pharmFormIds: number[];
-  categoryMedicineId: number;
-  unitMeasureId: number;
-}
+const medicines = [
+  {
+    id: '1',
+    name: 'Paracetamol 500mg',
+    description: 'Analgésico e antipirético usado no tratamento de febre e dor leve a moderada.',
+    category: 'Analgésico',
+    form: 'Comprimido',
+    unit: 'mg',
+    status: 'Ativo',
+  },
+  {
+    id: '2',
+    name: 'Dipirona Sódica 1g/ml',
+    description: 'Analgésico e antitérmico, indicado para febres e dores intensas.',
+    category: 'Analgésico',
+    form: 'Solução oral',
+    unit: 'ml',
+    status: 'Ativo',
+  },
+  {
+    id: '3',
+    name: 'Ibuprofeno 600mg',
+    description: 'Anti-inflamatório, analgésico e antipirético. Usado em dores musculares e febre.',
+    category: 'Anti-inflamatório',
+    form: 'Comprimido',
+    unit: 'mg',
+    status: 'Ativo',
+  },
+  {
+    id: '4',
+    name: 'Amoxicilina 500mg',
+    description: 'Antibiótico indicado para infecções bacterianas do trato respiratório e urinário.',
+    category: 'Antibiótico',
+    form: 'Cápsula',
+    unit: 'mg',
+    status: 'Ativo',
+  },
+  {
+    id: '5',
+    name: 'AAS 100mg',
+    description: 'Antiinflamatório e anticoagulante. Usado na prevenção de eventos cardíacos.',
+    category: 'Antiinflamatório',
+    form: 'Comprimido',
+    unit: 'mg',
+    status: 'Inativo',
+  },
+];
 
-// ⬇️ ATENÇÃO AQUI ⬇️
-// Se você estiver em EMULADOR ANDROID, troque pra "http://10.0.2.2:8080"
-const BASE_URL = "http://192.168.15.5:8080";
-
-async function getAllMedicines() {
-  try {
-    console.log('>>> chamando API:', BASE_URL + '/api/v1/medicines');
-
-    const response = await fetch(BASE_URL + '/api/v1/medicines', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    console.log('>>> status da API:', response.status);
-
-    if (!response.ok) {
-      throw new Error('Erro ao buscar medicamentos');
-    }
-
-    const data = await response.json();
-    console.log('>>> dados recebidos:', data);
-
-    return data;
-  } catch (error) {
-    console.error('Erro na requisição:', error);
-    throw error;
-  }
-}
-
-const MedicationListScreen = () => {
+export default function MedicationListScreen() {
   const router = useRouter();
-
   const [searchQuery, setSearchQuery] = useState('');
-  const [medicines, setMedicines] = useState<Medicine[]>([]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await getAllMedicines();
-        setMedicines(data);
-      } catch (e) {
-        console.log('Falha ao carregar medicamentos', e);
-      }
-    })();
-  }, []);
 
-  const filteredMedicines = medicines.filter((item) =>
-    (item.nameMedication ?? '')
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
+  const filteredMedicines = medicines.filter((medicine) =>
+    medicine.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <View style={styles.seguro}>
       <Header />
-
       <View style={styles.container}>
         <TextInput
           style={styles.searchBar}
-          placeholder="Buscar medicamento"
+          placeholder="Buscar medicamento..."
           value={searchQuery}
-          onChangeText={setSearchQuery}
+          onChangeText={(text) => setSearchQuery(text)}
         />
 
         <FlatList
-          style={{ flex: 1 }}
           data={filteredMedicines}
-          keyExtractor={(item) => item.id.toString()}
-          ListEmptyComponent={
-            <View style={{ padding: 20 }}>
-              <Text style={{ color: '#333' }}>
-                Nenhum medicamento encontrado.
-              </Text>
-            </View>
-          }
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() =>
                 router.push({
                   pathname: '../MedicationDetail/medicationDetail',
-                  params: { medicationId: item.id },
+                  params: { medicineId: item.id },
                 })
               }
+              activeOpacity={0.8}
             >
-              
-              <MedicationCard medication={item} />
+              <View
+                style={{
+                  backgroundColor: '#fff',
+                  padding: 14,
+                  borderRadius: 12,
+                  marginBottom: 10,
+                  shadowColor: '#000',
+                  shadowOpacity: 0.1,
+                  shadowRadius: 5,
+                  elevation: 3,
+                }}
+              >
+                <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#111827' }}>
+                  {item.name}
+                </Text>
+                <Text
+                  style={{
+                    color: '#6B7280',
+                    marginTop: 4,
+                    fontSize: 13,
+                  }}
+                  numberOfLines={2}
+                >
+                  {item.description}
+                </Text>
 
+                {/* Linha extra com informações */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginTop: 8,
+                  }}
+                >
+                  <Text style={{ fontSize: 12, color: '#6B7280' }}>
+                    {item.category} • {item.form}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: item.status === 'Ativo' ? '#16A34A' : '#EF4444',
+                      fontWeight: '600',
+                    }}
+                  >
+                    {item.status}
+                  </Text>
+                </View>
+              </View>
             </TouchableOpacity>
           )}
         />
       </View>
     </View>
   );
-};
-
-export default MedicationListScreen;
+}

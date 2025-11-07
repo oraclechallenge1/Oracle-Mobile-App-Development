@@ -16,15 +16,6 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     color: PRIMARIA,
   },
-  input: {
-    width: '100%',
-    height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 16,
-    paddingLeft: 16,
-  },
   button: {
     backgroundColor: PRIMARIA,
     width: '100%',
@@ -40,6 +31,21 @@ const styles = StyleSheet.create({
   logo: {
     width: 330,
     height: 220,
+  },
+  rememberMeContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center', 
+    marginBottom: 12, 
+    justifyContent: 'space-between'
+  },
+  textRememberMe: {
+    color: '#334155',
+  },
+  text_message: {
+    fontSize: 15,
+    marginBottom: 40,
+    color: PRIMARIA,
   },
 });
 

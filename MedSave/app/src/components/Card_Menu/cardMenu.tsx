@@ -6,18 +6,19 @@ const icons = {
   "icon-coracao.png": require("../../icon/icon-coracao.png"),
   "icon-user.png": require("../../icon/icon-user.png"),
   "icon-search.png": require("../../icon/icon-search.png"),
+  "icon-profile.png": require("../../icon/icon-profile.png"),
 
 };
 
 type CardItem = {
-  id: string; // 👈 identificador único
+  id: string;
   title: string;
   imageSource: keyof typeof icons;
 };
 
 type Card_MenuProps = {
   items: CardItem[];
-  onItemPress?: (id: string) => void; // 👈 callback para o clique
+  onItemPress?: (id: string) => void; 
 };
 
 export default function Card_Menu({ items, onItemPress }: Card_MenuProps) {
