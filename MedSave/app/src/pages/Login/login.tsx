@@ -1,49 +1,67 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './style';
 import InputField from '../../components/InputField/InputField';
+import { ROUTES } from '../../navigation/routes'; 
+
 
 const LoginScreen = () => {
+
 
   const router = useRouter();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
-  const [message, setMessage] = useState('');
+  const [message, setMessage]   = useState('');
 
   useEffect(() => {
 
     (async () => {
-
       const savedUser = await AsyncStorage.getItem('@ultimoUsuario');
 
-      if (savedUser) {
-        setUsername(savedUser);
-        router.push('../Menu/menu');
-      }
+      if (savedUser) setUsername(savedUser);
 
     })();
+
 
   }, []);
 
   const handleLogin = async () => {
 
-    if (username === 'admin' && password === '123456' || username === 'maria' && password === '12345671' || username === 'joao' && password === '12345678') {
+    const u = username.trim();
+    const p = password;
 
-      await AsyncStorage.setItem('@ultimoUsuario', username);
-      await AsyncStorage.setItem('@auth', '1');
-      router.replace('../Menu/menu');
-      
-    } else {
-      setMessage('Usuário ou senha incorretos')
+    const ok =
+      (u === 'admin' && p === '123456') ||
+      (u === 'maria' && p === '12345671') ||
+      (u === 'joao'  && p === '12345678');
+
+
+
+    if (ok) {
+      await AsyncStorage.setItem('@ultimoUsuario', u);
+      await AsyncStorage.setItem('@auth', '1'); 
+
+      router.replace(ROUTES.MENU as any); 
+
+      return;
+
+
     }
+
+    setMessage('Usuário ou senha incorretos');
   };
 
+
+
+
   return (
+
+
     <View style={styles.container}>
+
       <Image
         source={require('../../img/medsave_logo.png')}
         style={styles.logo}
@@ -52,16 +70,16 @@ const LoginScreen = () => {
 
       <Text style={styles.title}>Bem-vindo</Text>
 
-     <InputField
+      <InputField
         placeholder="Usuário"
         value={username}
-        onChangeText={setUsername}
+        onChangeText={(t) => { setUsername(t); if (message) setMessage(''); }}
       />
 
       <InputField
         placeholder="Senha"
         value={password}
-        onChangeText={setPassword}
+        onChangeText={(t) => { setPassword(t); if (message) setMessage(''); }}
         secureTextEntry
       />
 
@@ -71,9 +89,14 @@ const LoginScreen = () => {
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
 
-      
+
     </View>
+
+    
   );
 };
+
+
+
 
 export default LoginScreen;

@@ -5,6 +5,15 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8FAFC',
   },
+  card:{
+    backgroundColor: '#fff',
+            borderRadius: 12,
+            padding: 16,
+            shadowColor: '#000',
+            shadowOpacity: 0.1,
+            shadowRadius: 5,
+            elevation: 3,
+  },
   container: {
     padding: 16,
   },
@@ -17,6 +26,17 @@ export default StyleSheet.create({
   label: {
     fontSize: 14,
     color: '#6B7280',
+  },
+  category:{
+    fontSize: 20, 
+    fontWeight: '700', 
+    color: '#111827', 
+    marginBottom: 8 
+  },
+  description:{
+  fontSize: 14, 
+  color: '#6B7280', 
+  lineHeight: 20
   },
   value: {
     fontSize: 14,

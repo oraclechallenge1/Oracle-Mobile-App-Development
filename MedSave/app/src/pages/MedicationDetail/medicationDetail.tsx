@@ -1,13 +1,20 @@
-import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../../components/ui/Header/header';
 import styles from './style';
+import style from './style';
 
-// ========================
-// 💊 DADOS MOCKADOS (iguais à tela de lista)
-// ========================
-const medicines = [
+
+const MEDS_CACHE_KEY = '@medsave:medicines_cache';
+
+
+
+
+const MOCKS = [
+
+
   {
     id: '1',
     name: 'Paracetamol 500mg',
@@ -56,10 +63,64 @@ const medicines = [
 ];
 
 export default function MedicationDetailScreen() {
+
+
   const { medicineId } = useLocalSearchParams<{ medicineId: string }>();
-  const medicine = medicines.find((m) => m.id === medicineId);
+  const [medicine, setMedicine] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+
+      try {
+
+        const raw = await AsyncStorage.getItem(MEDS_CACHE_KEY);
+        const localList = raw ? JSON.parse(raw) : [];
+
+     
+
+        const combined = [...MOCKS, ...localList];
+        const found = combined.find((m) => m.id === medicineId);
+        setMedicine(found ?? null);
+
+      } catch {
+        setMedicine(null);
+      } finally {
+        setLoading(false);
+      }
+
+
+    })();
+
+
+  }, [medicineId]);
+
+  if (loading) {
+
+
+
+    return (
+
+
+      <View style={[styles.seguro, { justifyContent: 'center', alignItems: 'center' }]}>
+
+        <ActivityIndicator size="large" color="#E53935" />
+
+        <Text style={{ marginTop: 10, color: '#6B7280' }}>Carregando medicamento...</Text>
+
+
+      </View>
+
+    );
+
+  }
+
+
+
 
   if (!medicine) {
+
+
     return (
       <View style={[styles.seguro, { alignItems: 'center', justifyContent: 'center' }]}>
         <Text style={{ color: '#6B7280', fontSize: 16 }}>Medicamento não encontrado.</Text>
@@ -67,46 +128,46 @@ export default function MedicationDetailScreen() {
     );
   }
 
+
+
+
   return (
+
+
     <View style={styles.seguro}>
+
       <Header />
+
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+
         <Text style={styles.title}>Detalhes do Medicamento</Text>
 
-        {/* Card principal */}
         <View
-          style={{
-            backgroundColor: '#fff',
-            borderRadius: 12,
-            padding: 16,
-            shadowColor: '#000',
-            shadowOpacity: 0.1,
-            shadowRadius: 5,
-            elevation: 3,
-          }}
+          style={styles.card}
+          
         >
-          <Text style={{ fontSize: 20, fontWeight: '700', color: '#111827', marginBottom: 8 }}>
+          <Text style={styles.category}>
             {medicine.name}
           </Text>
 
-          <Text style={{ fontSize: 14, color: '#6B7280', lineHeight: 20 }}>
-            {medicine.description}
+          <Text style={styles.description}>
+            {medicine.description || 'Sem descrição.'}
           </Text>
 
           <View style={{ marginTop: 16, gap: 10 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={styles.label}>Categoria</Text>
-              <Text style={styles.value}>{medicine.category}</Text>
+              <Text style={styles.value}>{medicine.category || medicine.categoria?.label || '-'}</Text>
             </View>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={styles.label}>Forma farmacêutica</Text>
-              <Text style={styles.value}>{medicine.form}</Text>
+              <Text style={styles.value}>{medicine.form || medicine.forma?.label || '-'}</Text>
             </View>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={styles.label}>Unidade de medida</Text>
-              <Text style={styles.value}>{medicine.unit}</Text>
+              <Text style={styles.value}>{medicine.unit || medicine.unidade?.label || '-'}</Text>
             </View>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -117,12 +178,18 @@ export default function MedicationDetailScreen() {
                   { color: medicine.status === 'Ativo' ? '#16A34A' : '#EF4444', fontWeight: '700' },
                 ]}
               >
-                {medicine.status}
+                {medicine.status || '-'}
+
               </Text>
+
             </View>
+
           </View>
+
         </View>
+        
       </ScrollView>
+
     </View>
   );
 }

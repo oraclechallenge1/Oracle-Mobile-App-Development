@@ -70,7 +70,7 @@ export default function Profile() {
 
           <TouchableOpacity
             style={styles.editBtn}
-            onPress={() => {/* futuramente: editar perfil local */}}
+            onPress={() => {}}
           >
             <Ionicons name="pencil" size={18} color={PRIMARY} />
           </TouchableOpacity>

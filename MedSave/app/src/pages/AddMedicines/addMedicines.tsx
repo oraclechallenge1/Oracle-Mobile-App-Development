@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import estilos from "./style";
 import Header from "../../components/ui/Header/header";
 
@@ -8,12 +9,10 @@ import ModalLista, { Opcao } from "../../components/ModalLista/modalLista";
 import CampoTexto from "../../components/Input/input";
 import SeletorLinha from "../../components/Select/select";
 import PilulasToggle from "../../components/PilulasToggle/pilulasToggle";
+import { ROUTES } from "../../navigation/routes";
 
 const DRAFT_KEY = "@medsave:draft_medicine";
 const MEDS_CACHE_KEY = "@medsave:medicines_cache";
-
-
-
 
 const CATEGORIAS: Opcao[] = [
   { id: 1, label: "Analgésico" },
@@ -44,6 +43,10 @@ const ATIVOS: Opcao[] = [
 type ChaveModal = "categoria" | "unidade" | "forma" | "ativo_med" | null;
 
 export default function Add_Medicines() {
+
+
+  const router = useRouter();
+
   const [nome, setNome] = useState("");
   const [erroNome, setErroNome] = useState<string>("");
 
@@ -56,13 +59,15 @@ export default function Add_Medicines() {
   const [modalAberto, setModalAberto] = useState<ChaveModal>(null);
 
   useEffect(() => {
+
     (async () => {
 
-      const raw = await AsyncStorage.getItem(DRAFT_KEY);
-
-      if (!raw) return;
-
       try {
+
+        const raw = await AsyncStorage.getItem(DRAFT_KEY);
+
+        if (!raw) return;
+
 
         const draft = JSON.parse(raw);
         setNome(draft.nome ?? "");
@@ -72,26 +77,31 @@ export default function Add_Medicines() {
         setForma(draft.forma ?? null);
         setAtivoMed(draft.ativoMed ?? null);
 
-      } catch {}
+      } catch {
+      
+        await AsyncStorage.removeItem(DRAFT_KEY);
+      }
 
     })();
-  }, []);
 
+
+  }, []);
 
   useEffect(() => {
 
     const t = setTimeout(() => {
+
       const draft = { nome, status, categoria, unidade, forma, ativoMed, updatedAt: Date.now() };
-
       AsyncStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-
     }, 300);
 
     return () => clearTimeout(t);
 
+
   }, [nome, status, categoria, unidade, forma, ativoMed]);
 
   const limparCampos = async () => {
+
     setNome("");
     setStatus(null);
     setCategoria(null);
@@ -99,20 +109,22 @@ export default function Add_Medicines() {
     setForma(null);
     setAtivoMed(null);
     setErroNome("");
-    await AsyncStorage.removeItem(DRAFT_KEY);
-  };
 
+
+    await AsyncStorage.removeItem(DRAFT_KEY);
+
+  };
 
   const abrir = (m: ChaveModal) => setModalAberto(m);
   const fechar = () => setModalAberto(null);
 
   const onChangeNome = (t: string) => {
     setNome(t);
+
     if (t.trim().length >= 3) setErroNome("");
+
     else setErroNome("Nome do medicamento muito curto.");
   };
-
-
 
   const aoSalvar = async () => {
     const okNome = nome.trim().length >= 3;
@@ -125,9 +137,7 @@ export default function Add_Medicines() {
     if (!status || !categoria || !unidade || !forma || !ativoMed) {
       Alert.alert("Atenção", "Preencha todos os campos obrigatórios.");
       return;
-
     }
-
 
     const novo = {
       id: Date.now().toString(),
@@ -140,20 +150,27 @@ export default function Add_Medicines() {
       createdAt: new Date().toISOString(),
     };
 
-    const raw = await AsyncStorage.getItem(MEDS_CACHE_KEY);
+    try {
 
-    const lista = raw ? JSON.parse(raw) : [];
+      const raw = await AsyncStorage.getItem(MEDS_CACHE_KEY);
+      const lista = raw ? JSON.parse(raw) : [];
+      lista.push(novo);
 
-    lista.push(novo);
-    await AsyncStorage.setItem(MEDS_CACHE_KEY, JSON.stringify(lista));
+      await AsyncStorage.setItem(MEDS_CACHE_KEY, JSON.stringify(lista));
 
+      await limparCampos();
 
-    await limparCampos();
-    Alert.alert("Sucesso", "Medicamento salvo (Salvamento não funcional).");
-    
+      Alert.alert("Sucesso", "Medicamento salvo localmente.");
+      
+      router.replace(ROUTES.MED_LIST as any);
+    } catch {
+      Alert.alert("Erro", "Não foi possível salvar localmente.");
+    }
   };
 
-  let dadosModal: | { titulo: string; lista: Opcao[]; set: (o: Opcao | null) => void } | null = null;
+  let dadosModal:
+    | { titulo: string; lista: Opcao[]; set: (o: Opcao | null) => void }
+    | null = null;
 
   if (modalAberto === "categoria") {
     dadosModal = { titulo: "categoria", lista: CATEGORIAS, set: setCategoria };
@@ -170,23 +187,18 @@ export default function Add_Medicines() {
   const botaoDesabilitado =
     !nome || !status || !categoria || !unidade || !forma || !ativoMed;
 
-
-
-    
-
   return (
-
     <View style={estilos.seguro}>
 
       <Header />
 
       <ScrollView style={estilos.container} contentContainerStyle={estilos.conteudo}>
+
         <Text style={estilos.titulo}>Cadastrar Medicamento</Text>
 
         <View style={estilos.cartao}>
 
           <View style={estilos.campo}>
-
 
             <CampoTexto
               rotulo="Nome do medicamento *"
@@ -197,16 +209,13 @@ export default function Add_Medicines() {
               erro={erroNome}
             />
 
-
           </View>
+
+
 
           <View style={estilos.conteudo}>
 
-            <Text style={estilos.rotulo}>
-              Status *
-            </Text>
-
-
+            <Text style={estilos.rotulo}>Status *</Text>
 
             <PilulasToggle
               opcoes={["Ativo", "Inativo"]}
@@ -214,6 +223,7 @@ export default function Add_Medicines() {
               aoMudar={(v) => setStatus(v as "Ativo" | "Inativo")}
               cor="#E53935"
             />
+            
           </View>
 
           <SeletorLinha
@@ -255,24 +265,20 @@ export default function Add_Medicines() {
 
           <Text style={estilos.ajuda}>* Campos obrigatórios</Text>
         </View>
-
       </ScrollView>
-
-
-
 
       {dadosModal && (
         <ModalLista
           visivel={!!modalAberto}
           titulo={dadosModal.titulo}
           opcoes={dadosModal.lista}
-          aoEscolher={(o) => { dadosModal!.set(o); setModalAberto(null); }}
+          aoEscolher={(o) => {
+            dadosModal!.set(o);
+            setModalAberto(null);
+          }}
           aoFechar={fechar}
         />
       )}
-
     </View>
-
-
   );
 }
